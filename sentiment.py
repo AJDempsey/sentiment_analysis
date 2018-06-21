@@ -43,8 +43,25 @@ def download_and_load_datasets(force_download=False):
 
     return train_df, test_df
 
-tf.logging.set_verbosity(tf.logging.ERROR)
 
-train_df, test_df = download_and_load_datasets()
-train_df.head()
+if __name__ == "__main__":
+    tf.logging.set_verbosity(tf.logging.ERROR)
+
+    train_df, test_df = download_and_load_datasets()
+    print(train_df.head())
+
+    # Training input on the whole training set with no limit on training epochs.
+    train_input_fn = tf.estimator.inputs.pandas_input_fn(
+        train_df, train_df["polarity"], num_epochs=None, shuffle=True
+    )
+
+    # Prediction on the whole training set.
+    predict_train_input_fn = tf.estimator.pandas_input_fn(
+        train_df, train_df["polarity"], shuffle=False
+    )
+
+    # Prediction on the test set.
+    predict_test_input_fn = tf.estimator.inputs.pandas_input_fn(
+        test_df, test_df["polarity"], shuffle=False
+    )
 
